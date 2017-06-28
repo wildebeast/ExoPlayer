@@ -452,5 +452,14 @@
         ]
       }
     ]
+  },
+  {
+    "name": "Reproduced Behavior: Clipped Loop Delay",
+    "samples": [
+      {
+        "name": "Google Glass DASH - VP9 and Opus",
+        "uri": "http://demos.webmproject.org/dash/201410/vp9_glass/manifest_vp9_opus.mpd"
+      }
+    ]
   }
 ]

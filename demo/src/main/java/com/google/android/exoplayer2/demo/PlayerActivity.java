@@ -48,8 +48,10 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer.DecoderInitializationException;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil.DecoderQueryException;
 import com.google.android.exoplayer2.source.BehindLiveWindowException;
+import com.google.android.exoplayer2.source.ClippingMediaSource;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
@@ -73,6 +75,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An activity that plays media using {@link SimpleExoPlayer}.
@@ -329,8 +332,10 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
         return new SsMediaSource(uri, buildDataSourceFactory(false),
             new DefaultSsChunkSource.Factory(mediaDataSourceFactory), mainHandler, eventLogger);
       case C.TYPE_DASH:
-        return new DashMediaSource(uri, buildDataSourceFactory(false),
-            new DefaultDashChunkSource.Factory(mediaDataSourceFactory), mainHandler, eventLogger);
+        MediaSource source = new DashMediaSource(uri, buildDataSourceFactory(false),
+                new DefaultDashChunkSource.Factory(mediaDataSourceFactory), mainHandler, eventLogger);
+        ClippingMediaSource clippingMediaSource = new ClippingMediaSource(source, TimeUnit.SECONDS.toMicros(5), TimeUnit.SECONDS.toMicros(7));
+        return new LoopingMediaSource(clippingMediaSource);
       case C.TYPE_HLS:
         return new HlsMediaSource(uri, mediaDataSourceFactory, mainHandler, eventLogger);
       case C.TYPE_OTHER:
